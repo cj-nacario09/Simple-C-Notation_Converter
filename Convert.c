@@ -3,32 +3,33 @@
 
 /*
 MEMBERS: 
-    BRUTAS, Louise
-    MORGA, Christian 
-    NACARIO, Carl Joseph
+    BRUTAS, LOUISE
+    MORGA, CHRISTIAN
+    NACARIO, CARL JOSEPH
 */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #include <stdbool.h>
 
-#define MAX 100  // Maximum stack size
+#define MAX 100  //Maximum stack size
 
-// Node for expression tree
+//Node for expression tree
 typedef struct Node {
-    char value[10];           // Stores operator or operand
-    struct Node* left;        // Left child
-    struct Node* right;       // Right child
+    char value[10];           //Stores operator or operand
+    struct Node* left;        //Left child
+    struct Node* right;       //Right child
 } Node;
 
-// Token structure: holds a string and whether it is an operator
+//Token structure- holds a string and whether it is an operator
 typedef struct {
     char* value;
     bool isOperator;
 } Token;
 
-// Stack structure used for building trees
+//Stack structure used for building trees
 typedef struct Stack {
     Node* data[MAX];
     int top;
@@ -36,13 +37,13 @@ typedef struct Stack {
 
 // ----------- Stack Operations -----------
 
-// Initializes the stack
+//Initializes the stack
 void initStack(Stack* s) { s->top = -1; }
 
-// Checks if the stack is empty
+//Checks if the stack is empty
 bool isEmpty(Stack* s) { return s->top == -1; }
 
-// Push a node onto the stack, with overflow error check
+//Push a node onto the stack, with overflow error check
 void push(Stack* s, Node* node) {
     if (s->top >= MAX - 1) {
         printf("Error: Stack overflow\n");
@@ -51,7 +52,7 @@ void push(Stack* s, Node* node) {
     s->data[++(s->top)] = node;
 }
 
-// Pops a node from the stack, with underflow error check
+//Pops a node from the stack, with underflow error check
 Node* pop(Stack* s) {
     if (isEmpty(s)) {
         printf("Error: Stack underflow\n");
@@ -60,12 +61,12 @@ Node* pop(Stack* s) {
     return s->data[(s->top)--];
 }
 
-// Peeks at the top node of the stack without removing it
+//Peeks at the top node of the stack without removing it
 Node* peek(Stack* s) {
     return isEmpty(s) ? NULL : s->data[s->top];
 }
 
-// Creates a new expression tree node
+//Creates a new expression tree node
 Node* createNode(const char* val) {
     Node* node = (Node*)malloc(sizeof(Node));
     if (!node) {
@@ -78,12 +79,12 @@ Node* createNode(const char* val) {
     return node;
 }
 
-// Checks if a token is an operator
+//Checks if a token is an operator
 bool isOperator(const char* token) {
     return strlen(token) == 1 && strchr("+-*/", token[0]);
 }
 
-// Checks if a token is a valid operand (alphanumeric string)
+//Checks if a token is a valid operand (alphanumeric string)
 bool isOperand(const char* token) {
     for (int i = 0; token[i]; i++) {
         if (!isalnum(token[i])) return false;
@@ -91,13 +92,13 @@ bool isOperand(const char* token) {
     return strlen(token) > 0;
 }
 
-// Verifies if a token is valid (operand, operator, or parenthesis)
+//Verifies if a token is valid (operand, operator, or parenthesis)
 bool isValidToken(const char* token) {
     return isOperand(token) || isOperator(token) ||
            strcmp(token, "(") == 0 || strcmp(token, ")") == 0;
 }
 
-// Splits the input string into tokens and identifies operators
+//Splits the input string into tokens and identifies operators
 int tokenize(char* input, Token* tokens, int maxTokens) {
     int tokenCount = 0;
     char* token = strtok(input, " ");
@@ -106,7 +107,7 @@ int tokenize(char* input, Token* tokens, int maxTokens) {
             printf("Error: Invalid token '%s'\n", token);
             return -1;
         }
-        tokens[tokenCount].value = strdup(token); // Dynamic copy of token
+        tokens[tokenCount].value = strdup(token); //Dynamic copy of token
         if (!tokens[tokenCount].value) {
             printf("Error: Memory allocation failed\n");
             return -1;
@@ -122,14 +123,14 @@ int tokenize(char* input, Token* tokens, int maxTokens) {
     return tokenCount;
 }
 
-// Frees memory allocated for tokens
+//Frees memory allocated for tokens
 void freeTokens(Token* tokens, int tokenCount) {
     for (int i = 0; i < tokenCount; i++) {
         free(tokens[i].value);
     }
 }
 
-// Recursively frees memory for the expression tree
+//Recursively frees memory for the expression tree
 void freeTree(Node* root) {
     if (!root) return;
     freeTree(root->left);
@@ -139,7 +140,7 @@ void freeTree(Node* root) {
 
 // ----------- Tree Traversal -----------
 
-// Preorder: root-left-right (used for prefix output)
+//Preorder: root-left-right (used for prefix output)
 void preorder(Node* root) {
     if (root) {
         printf("%s ", root->value);
@@ -148,7 +149,7 @@ void preorder(Node* root) {
     }
 }
 
-// Inorder: left-root-right (used for infix output with parentheses)
+//Inorder: left-root-right (used for infix output with parentheses)
 void inorder(Node* root) {
     if (root) {
         if (root->left && root->right) printf("( ");
@@ -159,7 +160,7 @@ void inorder(Node* root) {
     }
 }
 
-// Postorder: left-right-root (used for postfix output)
+//Postorder: left-right-root (used for postfix output)
 void postorder(Node* root) {
     if (root) {
         postorder(root->left);
@@ -170,7 +171,7 @@ void postorder(Node* root) {
 
 // ----------- PREFIX Handling -----------
 
-// Recursively validate prefix structure (each operator must have two children)
+//Recursively validate prefix structure (each operator must have two children)
 bool validatePrefixStructure(Token* tokens, int* index, int tokenCount) {
     if (*index >= tokenCount) return false;
 
@@ -184,14 +185,14 @@ bool validatePrefixStructure(Token* tokens, int* index, int tokenCount) {
     }
 }
 
-// Checks if entire prefix expression is valid
+//Checks if entire prefix expression is valid
 int validatePrefix(Token* tokens, int tokenCount) {
     int index = 0;
     if (!validatePrefixStructure(tokens, &index, tokenCount)) return 0;
     return index == tokenCount;
 }
 
-// Builds tree from prefix tokens using recursion
+//Builds tree from prefix tokens using recursion
 Node* buildTreeFromPrefix(Token* tokens, int* index, int tokenCount) {
     if (*index >= tokenCount) return NULL;
     Node* node = createNode(tokens[*index].value);
@@ -205,7 +206,7 @@ Node* buildTreeFromPrefix(Token* tokens, int* index, int tokenCount) {
 
 // ----------- POSTFIX Handling -----------
 
-// Validates if postfix expression has enough operands for each operator
+//Validates if postfix expression has enough operands for each operator
 int validatePostfix(Token* tokens, int tokenCount) {
     int operandCount = 0;
     for (int i = 0; i < tokenCount; i++) {
@@ -218,7 +219,7 @@ int validatePostfix(Token* tokens, int tokenCount) {
     return operandCount == 1;
 }
 
-// Builds tree from postfix tokens using stack
+//Builds tree from postfix tokens using stack
 Node* buildTreeFromPostfix(Token* tokens, int tokenCount) {
     Stack s;
     initStack(&s);
@@ -237,14 +238,14 @@ Node* buildTreeFromPostfix(Token* tokens, int tokenCount) {
 
 // ----------- INFIX Handling -----------
 
-// Defines operator precedence for infix expressions
+//Defines operator precedence for infix expressions
 int precedence(char op) {
     if (op == '+' || op == '-') return 1;
     if (op == '*' || op == '/') return 2;
     return 0;
 }
 
-// Converts infix expression string into an expression tree
+//Converts infix expression string into an expression tree
 Node* buildTreeFromInfix(const char* expr) {
     Stack ops, nodes;
     initStack(&ops);
@@ -321,7 +322,7 @@ Node* buildTreeFromInfix(const char* expr) {
         tok = strtok(NULL, " ");
     }
 
-    // Final merge of remaining operators
+    //Final merge of remaining operators
     while (!isEmpty(&ops)) {
         Node* op = pop(&ops);
         if (strcmp(op->value, "(") == 0 || strcmp(op->value, ")") == 0) {
@@ -347,7 +348,7 @@ Node* buildTreeFromInfix(const char* expr) {
         push(&nodes, op);
     }
 
-    // Only one tree should remain
+    //Only one tree should remain
     if (nodes.top != 0) {
         printf("Error: Too many operands\n");
         return NULL;
@@ -358,7 +359,7 @@ Node* buildTreeFromInfix(const char* expr) {
 
 // ----------- MAIN Function -----------
 
-// Entry point for the program
+//Entry point for the program
 int main(int argc, char *argv[]) {
     if (argc == 2 && strcmp(argv[1], "--help") == 0) {
         printf("\nFor Linux:");
@@ -456,7 +457,7 @@ int main(int argc, char *argv[]) {
     int tokenCount = 0;
 
     if (strcmp(inputType, "infix") == 0) {
-        // Early check to avoid invalid infix format
+        //Invalid infix format chevking
         char firstChar = input[0];
         char lastChar = input[strlen(input) - 1];
         if (firstChar == '+' || firstChar == '-' || firstChar == '*' || firstChar == '/' ||
@@ -492,7 +493,7 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    // Output conversion based on user's choice
+    //Output conversion based on user's choice
     printf("\n");
     if (strcmp(outputType, "infix") == 0) {
         printf("Infix Expression: ");
@@ -506,7 +507,8 @@ int main(int argc, char *argv[]) {
     } else {
         printf("\nError: Unknown output type\n");
         printf("\nThere's seems to be a problem, To convert a Notation please press \"--help\".\n");
-        printf("Usage: ./<program_name> \"--help\".\n\n");
+        printf("Usage: ./<program_name> \"--guide\".\n");
+        printf("Usage: <program_name.exe> \"--guide\".\n\n");
         freeTree(root);
         return 1;
     }
