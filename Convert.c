@@ -3,9 +3,9 @@
 
 /*
 MEMBERS: 
-    BRUTAS,
-    MORGA,
-    NACARIO,
+    BRUTAS, Louise
+    MORGA, Christian 
+    NACARIO, Carl Joseph
 */
 #include <stdio.h>
 #include <stdlib.h>
